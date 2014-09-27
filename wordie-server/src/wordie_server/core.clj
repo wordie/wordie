@@ -1,10 +1,11 @@
 (ns wordie-server.core
-  (:import java.io.ByteArrayInputStream)
+  (:import java.io.ByteArrayInputStream
+           java.net.URLEncoder)
   (:require [compojure.handler :as handler]
             [compojure.core :refer [defroutes GET]]
             [compojure.route :as route]
             [ring.util.response :as resp]
-            [wordie.merriam-webster :as mw]
+            [wordie.merriam-webster.keys :as mw-keys]
             [cheshire.core :refer (generate-string)]
             [clojure.data.zip.xml :refer :all]
             [clojure.xml :as xml]
@@ -33,8 +34,17 @@
 
 (defn query-dictionary
   [s]
-  (let [url (str dictionary-url s "?key=" mw/dictionary-key)]
+  (let [url (str dictionary-url (URLEncoder/encode s) "?key=" mw-keys/dictionary)]
     (slurp url)))
+
+(comment
+
+  (def response
+    (query-dictionary "vowel"))
+
+  (parse-xml response)
+
+  )
 
 (defn json-response
   [content]
@@ -42,16 +52,32 @@
    :headers {"Content-Type" "application/json; charset=utf-8"}})
 
 (defroutes routes
+
   (GET "/api/dictionary" [query]
-    (json-response (parse-xml (query-dictionary query)))))
+    (json-response (parse-xml (query-dictionary query))))
+
+  )
+
+(defn wrap-cors
+  [handler]
+  (fn [req]
+    (when-let [res (handler req)]
+      (resp/header res "Access-Control-Allow-Origin" "*"))))
 
 (def handler
-  (handler/api routes))
+  (-> routes
+      handler/api
+      wrap-cors))
 
 (comment
 
   (require '[ring.server.standalone :refer (serve)])
-  (def handler (handler/api #'routes))
+
+  (def handler
+    (-> #'routes
+        handler/api
+        wrap-cors))
+
   (defonce server (serve #'handler {:auto-reload? false
                                     :open-browser? false}))
 
