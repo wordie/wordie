@@ -9,7 +9,7 @@
             [wordie-server.merriam-webster.urls :as mw-urls]
             [wordie-server.yandex.keys :as yx-keys]
             [wordie-server.yandex.urls :as yx-urls]
-            [cheshire.core :refer (generate-string)]
+            [cheshire.core :refer (generate-string parse-string)]
             [clojure.data.zip.xml :refer :all]
             [clojure.xml :as xml]
             [clojure.zip :as zip]
@@ -37,16 +37,7 @@
 (defn detect-language
   [s]
   (let [url (str yx-urls/detect "?key=" yx-keys/api "&text=" (URLEncoder/encode s))]
-    (slurp (java.net.URI. url))))
-
-(comment
-
-  (def response
-    (query-dictionary "vowel"))
-
-  (parse-xml response)
-
-  )
+    (get (parse-string (slurp url)) "lang")))
 
 (defn json-response
   [content]
@@ -57,6 +48,9 @@
 
   (GET "/api/dictionary" [query]
     (json-response (parse-xml (query-dictionary query))))
+
+  (GET "/api/detect" [query]
+    (json-response (detect-language query)))
 
   )
 
