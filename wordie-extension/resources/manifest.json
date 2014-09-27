@@ -1,0 +1,18 @@
+{
+  "manifest_version": 2,
+  "name": "wordie",
+  "version": "0.0.1",
+ 
+  "description": "",
+ 
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["wordie.min.js"],
+      "run_at": "document_end"
+    }
+  ],
+  "web_accessible_resources": [
+      "img/*"
+  ]
+}
