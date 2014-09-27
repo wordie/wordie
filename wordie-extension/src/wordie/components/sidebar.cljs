@@ -68,8 +68,11 @@
                    :loading
                    (dom/div #js {:className "wordie-spinner"}"")
                    :loaded
-                   (apply dom/div #js {:className "wordie-definitions-list"}
+                   (if (seq data)
+                     (apply dom/div #js {:className "wordie-definitions-list"}
                             (om/build-all definition-view data))
+                     (dom/div #js {:className "wordie-message"}
+                              "Looks like we don't know that word."))
                    :failed
                    (dom/div #js {:className "wordie-message error"}
                             "We are sorry, but we could not contact our servers. Please try again later.")
