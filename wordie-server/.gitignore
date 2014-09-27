@@ -7,3 +7,4 @@ pom.xml.asc
 *.class
 /.lein-*
 /.nrepl-port
+profiles/dev/wordie/merriam_webster.clj
