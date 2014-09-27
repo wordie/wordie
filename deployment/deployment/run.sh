@@ -36,6 +36,21 @@ case "$ENV" in
 esac
 }
 
+upload_landing_page()
+{
+case "$ENV" in
+    local)
+        ansible-playbook -i inventory/local.ini --private-key=~/.vagrant.d/insecure_private_key -u vagrant landing-page-update.yaml
+        ;;
+    remote)
+        ansible-playbook -i inventory/remote.ini -u cloudsigma landing-page-update.yaml
+        ;;
+    *)
+        usage
+        ;;
+esac
+}
+
 ACTION=$1
 ENV=$2
 
@@ -46,6 +61,9 @@ case "$ACTION" in
         ;;
     update)
         update_env
+        ;;
+    lp)
+        upload_landing_page
         ;;
     *)
         usage
