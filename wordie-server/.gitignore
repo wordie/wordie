@@ -7,5 +7,5 @@ pom.xml.asc
 *.class
 /.lein-*
 /.nrepl-port
-profiles/dev/wordie_server/merriam_webster/keys.clj
-profiles/dev/wordie_server/yandex/keys.clj
+resources/wordie_server/merriam_webster/keys.clj
+resources/wordie_server/yandex/keys.clj

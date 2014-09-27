@@ -6,7 +6,9 @@
             [wordie-server.merriam-webster.api :as merriam-webster-api]
             [wordie-server.yandex.api :as yandex-api]
             [cheshire.core :refer (generate-string)]
-            ))
+            [ring.server.standalone :refer (serve)]
+            )
+  (:gen-class))
 
 (defn json-response
   [content]
@@ -34,17 +36,23 @@
       handler/api
       wrap-cors))
 
-(comment
+(def jetty-config
+  {:auto-reload? false
+   :open-browser? false})
 
-  (require '[ring.server.standalone :refer (serve)])
+(defn -main
+  [& args]
+  (serve handler jetty-config))
+
+(comment
 
   (def handler
     (-> #'routes
         handler/api
         wrap-cors))
 
-  (defonce server (serve #'handler {:auto-reload? false
-                                    :open-browser? false}))
+  (defonce server (serve #'handler
+                         (assoc jetty-config :port 3001)))
 
   )
 

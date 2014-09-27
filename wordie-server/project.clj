@@ -15,12 +15,15 @@
                  [compojure "1.1.5"]
                  [cheshire "5.2.0"]
                  [org.clojure/data.zip "0.1.1"]
+                 [ring-server "0.2.8"]
                  ]
 
   :plugins [[lein-ring "0.8.6"]]
 
-  :profiles {:dev {:resource-paths ["profiles/dev"]
-                   :dependencies [[ring-server "0.2.8"]]}}
+  :profiles {:uberjar {:aot :all
+                       :main "wordie-server.core"}}
+
+  :uberjar-name "wordie.jar"
 
   )
 
