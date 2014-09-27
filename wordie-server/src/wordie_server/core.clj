@@ -10,18 +10,18 @@
             )
   (:gen-class))
 
-(defn json-response
+(defn response
   [content]
-  {:body (generate-string content)
-   :headers {"Content-Type" "application/json; charset=utf-8"}})
+  {:body (pr-str content)
+   :headers {"Content-Type" "application/edn; charset=utf-8"}})
 
 (defroutes routes
 
   (GET "/api/dictionary" [query]
-    (json-response (merriam-webster-api/query-dictionary query)))
+    (response (merriam-webster-api/query-dictionary query)))
 
   (GET "/api/detect" [query]
-    (json-response (yandex-api/detect-language query)))
+    (response (yandex-api/detect-language query)))
 
   )
 
