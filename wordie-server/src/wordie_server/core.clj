@@ -36,22 +36,47 @@
   (let [url (str dictionary-url s "?key=" mw/dictionary-key)]
     (slurp url)))
 
+(comment
+
+  (def response
+    (query-dictionary "vowel"))
+
+  (parse-xml response)
+
+  )
+
 (defn json-response
   [content]
   {:body (generate-string content)
    :headers {"Content-Type" "application/json; charset=utf-8"}})
 
 (defroutes routes
+
   (GET "/api/dictionary" [query]
-    (json-response (parse-xml (query-dictionary query)))))
+    (json-response (parse-xml (query-dictionary query))))
+
+  )
+
+(defn wrap-cors
+  [handler]
+  (fn [req]
+    (when-let [res (handler req)]
+      (resp/header res "Access-Control-Allow-Origin" "*"))))
 
 (def handler
-  (handler/api routes))
+  (-> routes
+      handler/api
+      wrap-cors))
 
 (comment
 
   (require '[ring.server.standalone :refer (serve)])
-  (def handler (handler/api #'routes))
+
+  (def handler
+    (-> #'routes
+        handler/api
+        wrap-cors))
+
   (defonce server (serve #'handler {:auto-reload? false
                                     :open-browser? false}))
 
