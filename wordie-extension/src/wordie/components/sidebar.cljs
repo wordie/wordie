@@ -82,9 +82,7 @@
                             (om/build-all definition-view data))
                      (dom/div #js {:className "wordie-message"}
                               (str "Looks like we don't know that word."
-                                   ; FIXME: Hacky inline check
-                                   (if (= language "en")
-                                     ""
+                                   (when-not (= language "en")
                                      " We currently support only English."))))
                    :failed
                    (dom/div #js {:className "wordie-message error"}
