@@ -17,7 +17,7 @@
       with_items: groups.loadbalancers
 
   tasks:
-    - { include: "roles/java-service/tasks/update.yaml", service_name: wordie }
+    - { include: "roles/java-service/tasks/update.yaml", service_name: wordie, http_port: 3000 }
 
   post_tasks:
     - name: Enable the host

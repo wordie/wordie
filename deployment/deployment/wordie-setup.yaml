@@ -8,4 +8,4 @@
   hosts: wordie_nodes
   sudo: true
   roles:
-    - { role: java-service, service_name: wordie, port: 8080 }
+    - { role: java-service, service_name: wordie, http_port: 3000 }
