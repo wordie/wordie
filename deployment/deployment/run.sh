@@ -13,7 +13,7 @@ case "$ENV" in
         ansible-playbook -i inventory/local.ini --private-key=~/.vagrant.d/insecure_private_key -u vagrant wordie-setup.yaml
         ;;
     remote)
-        ansible-playbook -i inventory/remote.ini -u root wordie-setup.yaml
+        ansible-playbook -i inventory/remote.ini -u cloudsigma wordie-setup.yaml
         ;;
     *)
         usage
@@ -28,7 +28,7 @@ case "$ENV" in
         ansible-playbook -i inventory/local.ini --private-key=~/.vagrant.d/insecure_private_key -u vagrant wordie-update.yaml
         ;;
     remote)
-        ansible-playbook -i inventory/remote.ini -u root wordie-update.yaml
+        ansible-playbook -i inventory/remote.ini -u cloudsigma wordie-update.yaml
         ;;
     *)
         usage
