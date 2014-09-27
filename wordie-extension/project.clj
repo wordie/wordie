@@ -17,8 +17,8 @@
                                        :output-dir       "target"
                                        :optimizations    :none
                                        :source-map       true
-                                       :preamble         ["resources/vendor/react-0.11.1/react-with-addons.min.js"]
-                                       :externs          ["resources/vendor/react-0.11.1/react-with-addons.js"]
+                                       :preamble         ["../resources/vendor/react-0.11.1/react-with-addons.min.js"]
+                                       :externs          ["../resources/vendor/react-0.11.1/react-with-addons.js"]
                                        :closure-warnings {:externs-validation :off
                                                           :non-standard-jsdoc :off}}}
                        :prod
@@ -27,7 +27,7 @@
                                        :output-dir       "out"
                                        :optimizations    :advanced
                                        :pretty-print     false
-                                       :preamble         ["resources/vendor/react-0.11.1/react-with-addons.min.js"]
-                                       :externs          ["resources/vendor/react-0.11.1/react-with-addons.js"]
+                                       :preamble         ["../resources/vendor/react-0.11.1/react-with-addons.min.js"]
+                                       :externs          ["../resources/vendor/react-0.11.1/react-with-addons.js"]
                                        :closure-warnings {:externs-validation :off
                                                           :non-standard-jsdoc :off}}}}})
