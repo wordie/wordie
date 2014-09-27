@@ -1,5 +1,6 @@
 (ns wordie-server.core
-  (:import java.io.ByteArrayInputStream)
+  (:import java.io.ByteArrayInputStream
+           java.net.URLEncoder)
   (:require [compojure.handler :as handler]
             [compojure.core :refer [defroutes GET]]
             [compojure.route :as route]
@@ -33,7 +34,7 @@
 
 (defn query-dictionary
   [s]
-  (let [url (str dictionary-url s "?key=" mw/dictionary-key)]
+  (let [url (str dictionary-url (URLEncoder/encode s) "?key=" mw/dictionary-key)]
     (slurp url)))
 
 (comment
