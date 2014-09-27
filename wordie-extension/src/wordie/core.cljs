@@ -8,4 +8,9 @@
 (let [container (dom/createElement "div")
       body      (. js/document (querySelector "body"))]
   (set! (.-id container) "wordie-sidebar")
-  (dom/appendChild body container))
+  (dom/appendChild body container)
+
+  (om/root
+   sidebar-component
+   {}
+   {:target container}))

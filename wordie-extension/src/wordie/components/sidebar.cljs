@@ -3,5 +3,14 @@
             [om.dom :as dom :include-macros true]))
 
 (defn sidebar-component
-  [node owner])
+  [node owner]
+  (reify
+    om/IRenderState
+    (render-state [_ {:keys [state]}]
+      (dom/div #js {:className "df-sidebar closed"}
+               (dom/div #js {:className "df-toggle"}
+                        "")
+               (dom/div #js {:className "df-content"}
+                        (dom/div #js {:className "df-title"}
+                                 "state"))))))
 
