@@ -1,0 +1,23 @@
+- name: Install Java 1.7
+  apt: name=openjdk-7-jdk state=present update_cache=true
+
+- name: Create a user to run the server
+  user: name='{{ service_name }}' state=present
+
+- name: Create service home directory
+  file: path='/opt/{{ service_name }}' owner='{{ service_name }}' group='{{ service_name }}' state=directory
+  
+- name: 'Upload {{ service_name }} executable'
+  copy: src='./binaries/{{ service_name }}.jar' dest='/opt/{{ service_name }}/{{ service_name }}.jar' force=yes
+
+- name: Set correct permissions to the file
+  file: path='/opt/{{ service_name }}/{{ service_name }}.jar' owner='{{ service_name }}' group='{{ service_name }}' mode=0644
+
+- name: Copy the server startup file
+  template: src=init.sh dest='/etc/init.d/{{ service_name }}'
+
+- name: Set correct permissions to the init sctipt
+  file: path='/etc/init.d/{{ service_name }}' mode=0755
+  
+- name: 'Start {{ service_name }} service'
+  service: name='{{ service_name }}' state=started enabled=yes
