@@ -1,5 +1,4 @@
 (ns wordie-server.core
-  (:import java.io.ByteArrayInputStream)
   (:require [compojure.handler :as handler]
             [compojure.core :refer [defroutes GET]]
             [compojure.route :as route]
@@ -7,11 +6,7 @@
             [wordie-server.merriam-webster.api :as merriam-webster-api]
             [wordie-server.yandex.api :as yandex-api]
             [cheshire.core :refer (generate-string)]
-            [clojure.data.zip.xml :refer :all]
-            [clojure.xml :as xml]
-            [clojure.zip :as zip]
-            [clojure.data.zip :as zf]
-  ))
+            ))
 
 (defn json-response
   [content]
