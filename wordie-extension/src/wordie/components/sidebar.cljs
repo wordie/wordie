@@ -13,11 +13,20 @@
   [state]
   (om/transact! state [:sidebar :open] not))
 
-(defn show-definition
+(defn load-definition
   [state phrase r]
-  (put! r (str "http://192.168.0.12:3000/api/dictionary?query=" phrase))
-  (om/update! state [:main] {:status :loaded
-                             :phrase phrase}))
+  (let [status (get-in @state [:main :status])]
+    (when-not (= status :loading)
+      (om/update! state [:main :status] :loading)
+      (put! r (str "http://192.168.0.12:3000/api/dictionary?query=" phrase)))))
+
+(defn show-definition
+  [state data]
+  (om/transact! state [:main] #(assoc % :status :loaded :data data)))
+
+(defn switch-to-error
+  [state]
+  (om/update! state [:main :status] :failed))
 
 ;;
 ;; Events
@@ -31,20 +40,35 @@
 ;; Components
 ;;
 
+(defn definition-view
+  [data owner]
+  (reify
+    om/IRender
+    (render [_]
+      (print data)
+      (print (js->clj data))
+      (let [{:keys [word spelling definition]} data]
+        (dom/div #js {:className "wordie-header"} word)))))
+
 (defn sidebar-content-component
   [state owner]
   (reify
     om/IRender
     (render [_]
-      (let [{:keys [status phrase]} state]
+      (let [{:keys [status data]} state]
         (dom/div #js {:className "wordie-content"}
                  (case status
                    :loading
                    (dom/div #js {:className "wordie-spinner"}"")
                    :loaded
-                   (dom/div #js {:className "wordie-header"}
-                            phrase)
-                   (dom/div #js {:className "wordie-message"}"Select a word or a phrase on the page to see its definition.")))))))
+                   (dom/div #js {:className "definitions"}
+                            (apply dom/ul nil
+                                   (om/build-all definition-view data)))
+                   :failed
+                   (dom/div #js {:className "wordie-message error"}
+                            "We are sorry, but we could not contact our servers. Please try again later.")
+                   (dom/div #js {:className "wordie-message"}
+                            "Select a word or a phrase on the page to see its definition.")))))))
 
 (defn sidebar-component
   [state owner]
@@ -62,9 +86,10 @@
         (go-loop []
                  (when-let [[command data] (<! commands)]
                    (case command
-                     :toggle (toggle-sidebar state)
-                     :select (show-definition state (:text data) requests)
-                     :loading-success (print data)
+                     :toggle          (toggle-sidebar state)
+                     :select          (load-definition state (:text data) requests)
+                     :loading-success (show-definition state data)
+                     :loading-error   (switch-to-error state)
                      nil)
                    (recur)))))
 

@@ -65,3 +65,7 @@
 .wordie-message {
     padding: 10px;
 }
+
+.wordie-message.error {
+    color: #A10000;
+}

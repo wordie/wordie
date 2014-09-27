@@ -7,4 +7,4 @@
 
     :main
     {:status :initial
-     :phrase ""}}))
+     :data   nil}}))
