@@ -5,7 +5,7 @@
             [compojure.core :refer [defroutes GET]]
             [compojure.route :as route]
             [ring.util.response :as resp]
-            [wordie.merriam-webster :as mw]
+            [wordie.merriam-webster.keys :as mw-keys]
             [cheshire.core :refer (generate-string)]
             [clojure.data.zip.xml :refer :all]
             [clojure.xml :as xml]
@@ -34,7 +34,7 @@
 
 (defn query-dictionary
   [s]
-  (let [url (str dictionary-url (URLEncoder/encode s) "?key=" mw/dictionary-key)]
+  (let [url (str dictionary-url (URLEncoder/encode s) "?key=" mw-keys/dictionary)]
     (slurp url)))
 
 (comment
