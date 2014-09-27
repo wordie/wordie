@@ -4,8 +4,8 @@
   gather_facts: no 
 
   tasks:
-    - name: Uploading files
-      copy: src=./../../landing-page dest=/opt/www owner=wordie group=wordie mode=0644 force=yes directory_mode=0655
+    - name: Remove old files
+      command: rm -rf /opt/www
 
-    - name: Move folder to the correct place
-      command: mv /opt/www/landing-page/* /opt/www
+    - name: Uploading files
+      copy: src=./../../www dest=/opt owner=wordie group=wordie mode=0644 force=yes directory_mode=0655
