@@ -5,19 +5,16 @@
             [compojure.core :refer [defroutes GET]]
             [compojure.route :as route]
             [ring.util.response :as resp]
-            [wordie.merriam-webster.keys :as mw-keys]
+            [wordie-server.merriam-webster.keys :as mw-keys]
+            [wordie-server.merriam-webster.urls :as mw-urls]
+            [wordie-server.yandex.keys :as yx-keys]
+            [wordie-server.yandex.urls :as yx-urls]
             [cheshire.core :refer (generate-string)]
             [clojure.data.zip.xml :refer :all]
             [clojure.xml :as xml]
             [clojure.zip :as zip]
             [clojure.data.zip :as zf]
   ))
-
-(def base-url
-  "http://www.dictionaryapi.com/api/v1/references/")
-
-(def dictionary-url
-  (str base-url "collegiate/xml/"))
 
 (defn- zip-string
   [s]
@@ -34,8 +31,13 @@
 
 (defn query-dictionary
   [s]
-  (let [url (str dictionary-url (URLEncoder/encode s) "?key=" mw-keys/dictionary)]
+  (let [url (str mw-urls/dictionary (URLEncoder/encode s) "?key=" mw-keys/dictionary)]
     (slurp url)))
+
+(defn detect-language
+  [s]
+  (let [url (str yx-urls/detect "?key=" yx-keys/api "&text=" (URLEncoder/encode s))]
+    (slurp (java.net.URI. url))))
 
 (comment
 
