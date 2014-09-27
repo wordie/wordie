@@ -50,3 +50,18 @@
 .wordie-sidebar .wordie-toggle:hover {
     background-color: #C6C6C6;
 }
+
+.wordie-spinner {
+    position: absolute;
+    bottom: 0px;
+    top: 0px;
+    background-repeat: no-repeat;
+    width: 250px;
+    background-size: 31px;
+    background-position: 50% 47%;
+    background-image: url("chrome-extension://__MSG_@@extension_id__/img/spinner.gif");
+}
+
+.wordie-message {
+    padding: 10px;
+}

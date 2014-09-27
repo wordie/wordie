@@ -6,4 +6,5 @@
     {:open false}
 
     :main
-    {:phrase "-"}}))
+    {:status :initial
+     :phrase ""}}))

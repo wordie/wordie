@@ -15,7 +15,8 @@
 
 (defn show-definition
   [state phrase]
-  (om/update! state [:main :phrase] phrase))
+  (om/update! state [:main] {:status :loaded
+                             :phrase phrase}))
 
 ;;
 ;; Events
@@ -28,6 +29,21 @@
 ;;
 ;; Components
 ;;
+
+(defn sidebar-content-component
+  [state owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [{:keys [status phrase]} state]
+        (dom/div #js {:className "wordie-content"}
+                 (case status
+                   :loading
+                   (dom/div #js {:className "wordie-spinner"}"")
+                   :loaded
+                   (dom/div #js {:className "wordie-header"}
+                            phrase)
+                   (dom/div #js {:className "wordie-message"}"Select a word or a phrase on the page to see its definition.")))))))
 
 (defn sidebar-component
   [state owner]
@@ -53,9 +69,6 @@
             phrase (get-in state [:main :phrase] "-")]
         (dom/div #js {:className (str "wordie-sidebar" (if open " open" " closed"))}
                  (dom/div #js {:className "wordie-toggle"
-                               :onClick   #(on-toggle-click % commands)}
-                          "")
-                 (dom/div #js {:className "wordie-content"}
-                          (dom/div #js {:className "wordie-header"}
-                                   phrase)))))))
+                               :onClick   #(on-toggle-click % commands)} "")
+                 (om/build sidebar-content-component (:main state)))))))
 
