@@ -28,6 +28,6 @@
 
 (defn query-dictionary
   [s]
-  (let [url (str dictionary-url (URLEncoder/encode s) "?key=" mw-keys/dictionary)]
+  (let [url (str dictionary-url (URLEncoder/encode (.toLowerCase s)) "?key=" mw-keys/dictionary)]
     (parse-xml (slurp url))))
 
