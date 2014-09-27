@@ -14,6 +14,7 @@
                  [ring/ring-core "1.2.2"]
                  [compojure "1.1.5"]
                  [cheshire "5.2.0"]
+                 [org.clojure/data.zip "0.1.1"]
                  ]
 
   :plugins [[lein-ring "0.8.6"]]
