@@ -45,10 +45,15 @@
   (reify
     om/IRender
     (render [_]
-      (print data)
-      (print (js->clj data))
-      (let [{:keys [word spelling definition]} data]
-        (dom/div #js {:className "wordie-header"} word)))))
+      (let [{:keys [word spelling definitions]} data]
+        (dom/div #js {:className "wordie-definition"}
+                 (dom/div #js {:className "wordie-word"}
+                           word)
+                 (dom/div #js {:className "wordie-spelling"}
+                           spelling)
+                 (apply dom/ul #js {:className "wordie-definition-entries"}
+                        (for [definition definitions]
+                          (dom/li nil definition))))))))
 
 (defn sidebar-content-component
   [state owner]
@@ -61,7 +66,7 @@
                    :loading
                    (dom/div #js {:className "wordie-spinner"}"")
                    :loaded
-                   (dom/div #js {:className "definitions"}
+                   (dom/div #js {:className "wordie-definitions-list"}
                             (apply dom/ul nil
                                    (om/build-all definition-view data)))
                    :failed
