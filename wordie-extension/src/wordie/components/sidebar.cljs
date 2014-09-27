@@ -15,6 +15,7 @@
 
 (defn load-definition
   [state phrase r]
+  (om/update! state [:sidebar :open] true)
   (let [status (get-in @state [:main :status])]
     (when-not (= status :loading)
       (om/update! state [:main :status] :loading)
@@ -53,7 +54,8 @@
                            spelling)
                  (apply dom/ul #js {:className "wordie-definition-entries"}
                         (for [definition definitions]
-                          (dom/li nil definition))))))))
+                          (dom/li #js {:className "wordie-definition-entry"}
+                                  definition))))))))
 
 (defn sidebar-content-component
   [state owner]
@@ -66,9 +68,8 @@
                    :loading
                    (dom/div #js {:className "wordie-spinner"}"")
                    :loaded
-                   (dom/div #js {:className "wordie-definitions-list"}
-                            (apply dom/ul nil
-                                   (om/build-all definition-view data)))
+                   (apply dom/div #js {:className "wordie-definitions-list"}
+                            (om/build-all definition-view data))
                    :failed
                    (dom/div #js {:className "wordie-message error"}
                             "We are sorry, but we could not contact our servers. Please try again later.")

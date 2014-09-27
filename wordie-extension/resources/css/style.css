@@ -4,6 +4,7 @@
     bottom: 0;
     z-index: 1000000091;
     right: 0;
+    color: #202020;
 }
 
 .wordie-sidebar .wordie-content {
@@ -92,6 +93,11 @@
     font-size: 14px;
 }
 
-.wordie-definition-entries li {
+ul.wordie-definition-entries, li.wordie-definition-entry {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+li.wordie-definition-entry {
     padding: 0px 0px 8px 15px;
 }
