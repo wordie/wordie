@@ -19,7 +19,7 @@
   (let [status (get-in @state [:main :status])]
     (when-not (= status :loading)
       (om/update! state [:main :status] :loading)
-      (put! r (str "http://192.168.0.12:3000/api/dictionary?query=" phrase)))))
+      (put! r (str "http://wordie.clojurecup.com/api/dictionary?query=" phrase)))))
 
 (defn show-definition
   [state data]
