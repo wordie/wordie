@@ -1,7 +1,8 @@
 (ns wordie.core
   (:require [goog.dom :as dom]
             [om.core :as om :include-macros true]
-            [wordie.components.sidebar :refer [sidebar-component]]))
+            [wordie.components.sidebar :refer [sidebar-component]]
+            [wordie.state :as a]))
 
 (enable-console-print!)
 
@@ -12,5 +13,5 @@
 
   (om/root
    sidebar-component
-   {}
+   a/app-state
    {:target container}))
