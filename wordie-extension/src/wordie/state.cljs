@@ -6,5 +6,6 @@
     {:open false}
 
     :main
-    {:status :initial
-     :data   nil}}))
+    {:status   :initial
+     :data     nil
+     :language nil}}))

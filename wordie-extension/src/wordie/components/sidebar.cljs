@@ -1,6 +1,7 @@
 (ns wordie.components.sidebar
   (:require-macros [cljs.core.async.macros :refer [go-loop]])
-  (:require [cljs.core.async :as async :refer [chan put!]]
+  (:require [clojure.string :as clj-str]
+            [cljs.core.async :as async :refer [chan put!]]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [wordie.events :refer [selection server-channel]]))
@@ -19,7 +20,15 @@
   (let [status (get-in @state [:main :status])]
     (when-not (= status :loading)
       (om/update! state [:main :status] :loading)
-      (put! r (str "http://wordie.clojurecup.com/api/dictionary?query=" phrase)))))
+      (put! r [:dictionary-query (str "http://wordie.clojurecup.com/api/dictionary?query=" phrase)]))))
+
+(defn strip-numbers
+  [s]
+  (.trim (clj-str/replace s "[0-9]" "")))
+
+(defn lookup-language
+  [state phrase r]
+  (put! r [:detect-language (str "http://wordie.clojurecup.com/api/detect?query=" (strip-numbers phrase))]))
 
 (defn show-definition
   [state data]
@@ -62,7 +71,7 @@
   (reify
     om/IRender
     (render [_]
-      (let [{:keys [status data]} state]
+      (let [{:keys [status data language]} state]
         (dom/div #js {:className "wordie-content"}
                  (case status
                    :loading
@@ -72,12 +81,28 @@
                      (apply dom/div #js {:className "wordie-definitions-list"}
                             (om/build-all definition-view data))
                      (dom/div #js {:className "wordie-message"}
-                              "Looks like we don't know that word."))
+                              (str "Looks like we don't know that word."
+                                   ; FIXME: Hacky inline check
+                                   (if (= language "en")
+                                     ""
+                                     " We currently support only English."))))
                    :failed
                    (dom/div #js {:className "wordie-message error"}
                             "We are sorry, but we could not contact our servers. Please try again later.")
                    (dom/div #js {:className "wordie-message"}
                             "Select a word or a phrase on the page to see its definition.")))))))
+
+(defn handle-loading-success
+  [state [event-type data]]
+  (case event-type
+    :dictionary-query (show-definition state data)
+    :detect-language  (om/transact! state [:main] #(assoc % :language data))))
+
+(defn handle-loading-error
+  [state [event-type _]]
+  (case event-type
+    :dictionary-query (switch-to-error state)
+    :detect-language nil)) ; TODO: What is the expected behavior in this case?
 
 (defn sidebar-component
   [state owner]
@@ -92,15 +117,16 @@
     (will-mount [_]
       (let [commands (om/get-state owner :commands)
             requests (om/get-state owner :requests)]
+        (lookup-language state document.title requests)
         (go-loop []
-                 (when-let [[command data] (<! commands)]
-                   (case command
-                     :toggle          (toggle-sidebar state)
-                     :select          (load-definition state (:text data) requests)
-                     :loading-success (show-definition state data)
-                     :loading-error   (switch-to-error state)
-                     nil)
-                   (recur)))))
+          (when-let [[command data] (<! commands)]
+            (case command
+              :toggle           (toggle-sidebar state)
+              :select           (load-definition state (:text data) requests)
+              :loading-success  (handle-loading-success state data)
+              :loading-error    (handle-loading-error state data)
+              nil)
+            (recur)))))
 
     om/IRenderState
     (render-state [_ {:keys [commands]}]

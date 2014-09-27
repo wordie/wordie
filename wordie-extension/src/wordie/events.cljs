@@ -26,26 +26,26 @@
     ch))
 
 (defn- safe-read-response
-  [response]
+  [event-type response]
   (try
-    [:loading-success (reader/read-string response)]
+    [:loading-success [event-type (reader/read-string response)]]
     (catch :default e
-      [:loading-error nil])))
+      [:loading-error [event-type nil]])))
 
 (defn send-request!
-  [url responses]
+  [[event-type url] responses]
   (goog.net.XhrIo/send url (fn [response]
                     (let [xhr (aget response "target")]
                       (if (.isSuccess xhr)
-                        (put! responses (safe-read-response (.getResponseText xhr)))
-                        (put! responses [:loading-error   nil]))))))
+                        (put! responses (safe-read-response event-type (.getResponseText xhr)))
+                        (put! responses [:loading-error [event-type nil]]))))))
 
 (defn server-channel
   []
   (let [in  (chan)
         out (chan)]
-    (go (loop [url (<! in)]
-          (when url
-            (send-request! url out)
+    (go (loop [request (<! in)]
+          (when request
+            (send-request! request out)
             (recur (<! in)))))
     {:in in :out out}))
