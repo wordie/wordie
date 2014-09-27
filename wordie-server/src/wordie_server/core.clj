@@ -1,10 +1,15 @@
 (ns wordie-server.core
+  (:import java.io.ByteArrayInputStream)
   (:require [compojure.handler :as handler]
             [compojure.core :refer [defroutes GET]]
             [compojure.route :as route]
             [ring.util.response :as resp]
             [wordie.merriam-webster :as mw]
             [cheshire.core :refer (generate-string)]
+            [clojure.data.zip.xml :refer :all]
+            [clojure.xml :as xml]
+            [clojure.zip :as zip]
+            [clojure.data.zip :as zf]
   ))
 
 (def base-url
@@ -12,6 +17,19 @@
 
 (def dictionary-url
   (str base-url "collegiate/xml/"))
+
+(defn- zip-string
+  [s]
+  (zip/xml-zip (xml/parse (ByteArrayInputStream.
+                            (.getBytes s "UTF-8")))))
+
+(defn parse-xml
+  [s]
+  (let [xz (zip-string s)]
+    (for [entry (xml-> xz :entry)]
+      {:word (xml1-> entry :ew text)
+       :spelling (xml1-> entry :hw text)
+       :definitions (xml-> entry :def :dt text)})))
 
 (defn query-dictionary
   [s]
@@ -25,7 +43,7 @@
 
 (defroutes routes
   (GET "/api/dictionary" [query]
-    (json-response (query-dictionary query))))
+    (json-response (parse-xml (query-dictionary query)))))
 
 (def handler
   (handler/api routes))
