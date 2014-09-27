@@ -3,7 +3,7 @@
   (:require [cljs.core.async :as async :refer [chan put!]]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
-            [wordie.events :refer [selection]]))
+            [wordie.events :refer [selection server-channel]]))
 
 ;;
 ;; Actions
@@ -14,7 +14,8 @@
   (om/transact! state [:sidebar :open] not))
 
 (defn show-definition
-  [state phrase]
+  [state phrase r]
+  (put! r (str "http://192.168.0.12:3000/api/dictionary?query=" phrase))
   (om/update! state [:main] {:status :loaded
                              :phrase phrase}))
 
@@ -50,23 +51,26 @@
   (reify
     om/IInitState
     (init-state [_]
-      {:commands (selection)})
+      (let [{:keys [in out]} (server-channel)]
+        {:commands (async/merge [(selection) out])
+         :requests in}))
 
     om/IWillMount
     (will-mount [_]
-      (let [commands (om/get-state owner :commands)]
+      (let [commands (om/get-state owner :commands)
+            requests (om/get-state owner :requests)]
         (go-loop []
                  (when-let [[command data] (<! commands)]
                    (case command
                      :toggle (toggle-sidebar state)
-                     :select (show-definition state (:text data))
+                     :select (show-definition state (:text data) requests)
+                     :loading-success (print data)
                      nil)
                    (recur)))))
 
     om/IRenderState
     (render-state [_ {:keys [commands]}]
-      (let [open   (get-in state [:sidebar :open] false)
-            phrase (get-in state [:main :phrase] "-")]
+      (let [open   (get-in state [:sidebar :open] false)]
         (dom/div #js {:className (str "wordie-sidebar" (if open " open" " closed"))}
                  (dom/div #js {:className "wordie-toggle"
                                :onClick   #(on-toggle-click % commands)} "")
