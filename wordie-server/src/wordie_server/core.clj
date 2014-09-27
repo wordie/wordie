@@ -4,6 +4,7 @@
             [compojure.route :as route]
             [ring.util.response :as resp]
             [wordie.merriam-webster :as mw]
+            [cheshire.core :refer (generate-string)]
   ))
 
 (def base-url
@@ -17,9 +18,14 @@
   (let [url (str dictionary-url s "?key=" mw/dictionary-key)]
     (slurp url)))
 
+(defn json-response
+  [content]
+  {:body (generate-string content)
+   :headers {"Content-Type" "application/json; charset=utf-8"}})
+
 (defroutes routes
-  (GET "/api" [s]
-    (query-dictionary s)))
+  (GET "/api/dictionary" [query]
+    (json-response (query-dictionary query))))
 
 (def handler
   (handler/api routes))
