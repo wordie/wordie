@@ -1,0 +1,52 @@
+.wordie-sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    z-index: 5000;
+    right: 0;
+}
+
+.wordie-sidebar .wordie-content {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    background-color: #f2f2f2;
+    z-index: 5005;
+    width: 250px;
+}
+
+.wordie-sidebar.closed {
+    margin-right: -250px;
+}
+ 
+.wordie-sidebar.open {
+    margin-right: 0px;
+}
+ 
+.wordie-sidebar .wordie-header {
+    margin: 0;
+    padding: 16px 20px;
+    text-transform: uppercase;
+    font-family: "PT Sans Caption", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-weight: bold;
+    font-size: 16px;
+    text-align: center;
+}
+
+.wordie-sidebar .wordie-toggle {
+    position: absolute;
+    bottom: 0px;
+    top: 0px;
+    right: 250px;
+    background-color: #E3E3E3;
+    cursor: pointer;
+    background-repeat: no-repeat;
+    background-position: 50% 47%;
+    background-size: 15px;
+    width: 11px;
+}
+ 
+.wordie-sidebar .wordie-toggle:hover {
+    background-color: #C6C6C6;
+}

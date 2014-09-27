@@ -9,6 +9,7 @@
     {
       "matches": ["<all_urls>"],
       "js": ["wordie.min.js"],
+      "css": ["css/style.css"],
       "run_at": "document_end"
     }
   ],

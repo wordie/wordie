@@ -7,10 +7,10 @@
   (reify
     om/IRenderState
     (render-state [_ {:keys [state]}]
-      (dom/div #js {:className "df-sidebar closed"}
-               (dom/div #js {:className "df-toggle"}
+      (dom/div #js {:className "wordie-sidebar open"}
+               (dom/div #js {:className "wordie-toggle"}
                         "")
-               (dom/div #js {:className "df-content"}
-                        (dom/div #js {:className "df-title"}
+               (dom/div #js {:className "wordie-content"}
+                        (dom/div #js {:className "wordie-header"}
                                  "state"))))))
 
