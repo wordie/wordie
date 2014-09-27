@@ -3,4 +3,7 @@
 (def app-state
   (atom
    {:sidebar
-    {:open false}}))
+    {:open false}
+
+    :main
+    {:phrase "-"}}))
