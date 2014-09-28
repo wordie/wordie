@@ -1,5 +1,5 @@
 (defproject wordie "0.1.0-SNAPSHOT"
-  :description "FIXME: write this!"
+  :description "Wordie shows you everything you need to know about words you encounter right inside your browser."
   :url "http://wordie.clojurecup.com"
 
   :dependencies [[org.clojure/clojure "1.6.0"]
