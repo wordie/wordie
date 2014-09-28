@@ -1,4 +1,5 @@
 .wordie-sidebar {
+    all: initial;
     position: fixed;
     top: 0;
     bottom: 0;
@@ -100,6 +101,7 @@
 }
 
 ul.wordie-definition-entries, li.wordie-definition-entry {
+    all: initial;
     list-style-type: none;
     margin: 0;
     padding: 0;
