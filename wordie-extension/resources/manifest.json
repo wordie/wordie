@@ -3,8 +3,12 @@
   "name": "wordie",
   "version": "0.0.1",
  
-  "description": "",
- 
+  "description": "Wordie shows you everything you need to know about words you encounter right inside your browser.",
+  "icons": {
+      "16": "img/icon16.png",
+      "48": "img/icon48.png",
+      "128": "img/icon128.png"
+  },
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
@@ -13,6 +17,10 @@
       "run_at": "document_end"
     }
   ],
+
+  "browser_action": {
+      "default_icon": "img/icon48.png"
+  },
   "web_accessible_resources": [
       "img/*"
   ]
