@@ -18,4 +18,8 @@
      :thesaurus
      {:data   nil
       :status :initial}
+
+     :wikipedia
+     {:data   nil
+      :status :initial}
      }}))

@@ -70,7 +70,7 @@
     padding: 10px;
 }
 
-.wordie-message, .wordie-definitions-list {
+.wordie-message, .wordie-definitions-list, .wordie-wiki-content {
     font-size: 12px;
     padding: 7px;
 }
@@ -96,7 +96,7 @@
     color: #A0A0A0;
 }
 
-.wordie-definition-entries {
+.wordie-definition-entries, .wordie-wiki-content {
     font-size: 12px;
 }
 

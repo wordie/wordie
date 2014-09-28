@@ -28,8 +28,10 @@
                         (= thesaurus-status  :loading))
             (om/update! state [:main :definition :status] :loading)
             (om/update! state [:main :thesaurus  :status] :loading)
+            (om/update! state [:main :wikipedia  :status] :loading)
             (put! r [:thesaurus-query  (str "http://wordie.clojurecup.com/api/thesaurus?query=" phrase)])
-            (put! r [:dictionary-query (str "http://wordie.clojurecup.com/api/dictionary?query=" phrase)])))))))
+            (put! r [:dictionary-query (str "http://wordie.clojurecup.com/api/dictionary?query=" phrase)])
+            (put! r [:wikipedia-query (str "http://wordie.clojurecup.com/api/encyclopedia?query=" phrase)])))))))
 
 (defn strip-numbers
   [s]
@@ -43,9 +45,9 @@
   [state data]
   (om/transact! state [:main :definition] #(assoc % :status :loaded :data data)))
 
-(defn load-thesaurus-data
-  [state data]
-  (om/transact! state [:main :thesaurus] #(assoc % :status :loaded :data data)))
+(defn load-result-data
+  [state key data]
+  (om/transact! state [:main key] #(assoc % :status :loaded :data data)))
 
 (defn switch-to-error
   [state key]
@@ -80,14 +82,16 @@
   [state [event-type data]]
   (case event-type
     :dictionary-query (show-definition state data)
-    :thesaurus-query  (load-thesaurus-data state data)
+    :thesaurus-query  (load-result-data state :thesaurus data)
+    :wikipedia-query  (load-result-data state :wikipedia data)
     :detect-language  (om/transact! state [:main] #(assoc % :language data))))
 
 (defn handle-loading-error
   [state [event-type _]]
   (case event-type
     :dictionary-query (switch-to-error state :definition)
-    :thesaurus-query  (switch-to-error state :thesaurus)    
+    :thesaurus-query  (switch-to-error state :thesaurus)
+    :wikipedia-query  (switch-to-error state :wikipedia)
     nil))
 
 (defn handle-storage-read-response
@@ -131,7 +135,7 @@
   (reify
     om/IRenderState
     (render-state [_ {:keys [commands]}]
-      (let [{:keys [definition thesaurus language tab]} state]
+      (let [{:keys [definition thesaurus wikipedia language tab]} state]
         (dom/div #js {:className "wordie-content"}
                  (dom/div #js {:className "wordie-tab-panel"}
                           (dom/div #js {:className (str "wordie-tab"
@@ -143,15 +147,33 @@
                                                         (when (= tab :thesaurus)
                                                           " active"))
                                         :onClick  #(on-tab-selection % commands :thesaurus)}
-                                   "Thesaurus"))
-                 (let [{:keys [status data]} (if (= tab :definition) definition thesaurus)]
+                                   "Thesaurus")
+                          (dom/div #js {:className (str "wordie-tab"
+                                                        (when (= tab :wikipedia)
+                                                          " active"))
+                                        :onClick  #(on-tab-selection % commands :wikipedia)}
+                                   "Wikipedia"))
+                 (let [{:keys [status data]} (case tab
+                                               :thesaurus thesaurus
+                                               :wikipedia wikipedia
+                                               definition)]
                    (case status
                      :loading
                      (dom/div #js {:className "wordie-spinner"}"")
                      :loaded
                      (if (seq data)
-                       (apply dom/div #js {:className "wordie-definitions-list"}
-                              (om/build-all definition-view data))
+                       (if (or (= tab :thesaurus)
+                               (= tab :definition))
+                         (apply dom/div #js {:className "wordie-definitions-list"}
+                                (om/build-all definition-view data))
+                         (dom/div #js {:className "wordie-wiki-content"}
+                                (when-let [content (first data)]
+                                  (dom/div #js {:className "wordie-definition"}
+                                           (dom/div #js {:className "wordie-word"}
+                                                    (get content "title"))
+                                           (dom/div #js {:className "wordie-wiki-extract"
+                                                         :dangerouslySetInnerHTML #js {:__html (get content "extract")}}
+                                                    nil)))))
                        (dom/div #js {:className "wordie-message"}
                                 (str "Looks like we don't know that word."
                                      (when-not (= language "en")
