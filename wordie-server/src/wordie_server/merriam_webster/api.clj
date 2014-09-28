@@ -5,7 +5,8 @@
             [clojure.data.zip.xml :refer :all]
             [clojure.xml :as xml]
             [clojure.zip :as zip]
-            [clojure.data.zip :as zf]))
+            [clojure.data.zip :as zf]
+            [clojure.string :as clj-str]))
 
 (def base-url
   "http://www.dictionaryapi.com/api/v1/references/")
@@ -18,16 +19,24 @@
   (zip/xml-zip (xml/parse (ByteArrayInputStream.
                             (.getBytes s "UTF-8")))))
 
+(defn- text-preserve
+  [loc]
+  (let [string-node (xml-> loc zf/descendants zip/node string?)]
+    (clj-str/join " " (map clj-str/trim string-node))))
+
 (defn parse-xml
   [s]
   (let [xz (zip-string s)]
     (for [entry (xml-> xz :entry)]
       {:word (xml1-> entry :ew text)
        :spelling (xml1-> entry :hw text)
-       :definitions (xml-> entry :def :dt text)})))
+       :definitions (xml-> entry :def :dt text-preserve)})))
+
+(defn build-dictionary-query-url
+  [s]
+  (str dictionary-url (URLEncoder/encode (.toLowerCase s)) "?key=" mw-keys/dictionary))
 
 (defn query-dictionary
   [s]
-  (let [url (str dictionary-url (URLEncoder/encode (.toLowerCase s)) "?key=" mw-keys/dictionary)]
-    (parse-xml (slurp url))))
+  (parse-xml (slurp (build-dictionary-query-url s))))
 
