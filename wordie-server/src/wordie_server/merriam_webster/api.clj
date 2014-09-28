@@ -32,6 +32,7 @@
     (for [entry (xml-> xz :entry)]
       {:word (xml1-> entry :ew text)
        :spelling (xml1-> entry :hw text)
+       :fl (xml1-> entry :fl text)
        :definitions (xml-> entry :def :dt zip/node as-xml)})))
 
 (defn build-query-url
