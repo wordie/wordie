@@ -19,8 +19,8 @@
   (let [snapshot @state]
     (when (get-in snapshot [:sidebar :enabled])
       (om/update! state [:sidebar :open] true)
-      (om/update! state [:main :tab] :definition)
       (when-not (= phrase (get-in snapshot [:main :phrase]))
+        (om/update! state [:main :tab] :definition)
         (om/update! state [:main :phrase] phrase)
         (let [definition-status (get-in snapshot [:main :definition :status])
               thesaurus-status  (get-in snapshot [:main :thesaurus  :status])]
@@ -57,12 +57,8 @@
 
 (defn activate-tab
   [state tab]
-  (print :state @state)
-  (print :active-tab tab (get-in @state [:main :tab]))
   (when-not (= tab (get-in @state [:main :tab]))
-    (print :update!)
-    (om/update! state [:main :tab] tab)
-    (print :after-update @state)))
+    (om/update! state [:main :tab] tab)))
 
 ;;
 ;; Events
@@ -74,7 +70,6 @@
 
 (defn on-tab-selection
   [_ commands tab]
-  (print :init-tab tab)
   (put! commands [:change-tab tab]))
 
 ;;
@@ -128,37 +123,12 @@
                                        :dangerouslySetInnerHTML #js {:__html definition}}
                                   nil))))))))
 
-(defn tab-content-view
-  [state owner]
-  (reify
-    om/IRenderState
-    (render-state [_ {:keys [language]}]
-      (let [{:keys [status data]} state]
-        (case status
-          :loading
-          (dom/div #js {:className "wordie-spinner"}"")
-          :loaded
-          (if (seq data)
-            (apply dom/div #js {:className "wordie-definitions-list"}
-                   (om/build-all definition-view data))
-            (dom/div #js {:className "wordie-message"}
-                     (str "Looks like we don't know that word."
-                          (when-not (= language "en")
-                            " We currently support only English."))))
-          :failed
-          (dom/div #js {:className "wordie-message error"}
-                   "We are sorry, but we could not contact our servers. Please try again later.")
-          (dom/div #js {:className "wordie-message"}
-                   "Select a word or a phrase on the page to see its definition."))))))
-
 (defn sidebar-content-component
   [state owner]
   (reify
     om/IRenderState
     (render-state [_ {:keys [commands]}]
-      (print :render-content)
       (let [{:keys [definition thesaurus language tab]} state]
-        (print :rendering tab)
         (dom/div #js {:className "wordie-content"}
                  (dom/div #js {:className "wordie-tab-panel"}
                           (dom/div #js {:className (str "wordie-tab"
@@ -171,9 +141,23 @@
                                                           " active"))
                                         :onClick  #(on-tab-selection % commands :thesaurus)}
                                    "Thesaurus"))
-                 (if (= tab :definition)
-                   (om/build tab-content-view definition)
-                   (om/build tab-content-view thesaurus)))))))
+                 (let [{:keys [status data]} (if (= tab :definition) definition thesaurus)]
+                   (case status
+                     :loading
+                     (dom/div #js {:className "wordie-spinner"}"")
+                     :loaded
+                     (if (seq data)
+                       (apply dom/div #js {:className "wordie-definitions-list"}
+                              (om/build-all definition-view data))
+                       (dom/div #js {:className "wordie-message"}
+                                (str "Looks like we don't know that word."
+                                     (when-not (= language "en")
+                                       " We currently support only English."))))
+                     :failed
+                     (dom/div #js {:className "wordie-message error"}
+                              "We are sorry, but we could not contact our servers. Please try again later.")
+                     (dom/div #js {:className "wordie-message"}
+                              "Select a word or a phrase on the page to see its definition."))))))))
 
 (defn sidebar-component
   [state owner]
@@ -208,7 +192,6 @@
 
     om/IRenderState
     (render-state [_ {:keys [commands]}]
-      (print :render-sidebar)
       (let [open    (get-in state [:sidebar :open] false)
             enabled (get-in state [:sidebar :enabled] false)]
         (dom/div #js {:className (str "wordie-sidebar" (if open " open" " closed"))}
