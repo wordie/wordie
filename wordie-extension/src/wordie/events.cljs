@@ -14,10 +14,13 @@
 
 (defn- handle-text-selection
   [e ch]
-  (when-let [selection (get-selection)]
-    (put! ch [:select {:text selection
-                       :x    (.-pageX e)
-                       :y    (.-pageY e)}])))
+  (let [wordie-node (.getElementById js/document "wordie-sidebar")
+        target (aget e "target")]
+    (when-not (.contains wordie-node target)
+      (when-let [selection (get-selection)]
+        (put! ch [:select {:text selection
+                           :x    (.-pageX e)
+                           :y    (.-pageY e)}])))))
 
 (defn selection
   []
