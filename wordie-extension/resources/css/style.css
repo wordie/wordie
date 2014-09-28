@@ -152,9 +152,7 @@ li.wordie-definition-entry sx:not(:last-child):after {
 }
 
 .wordie-tab-panel .wordie-tab {
-    display: inline-block;
-    width: 95px;
-    padding: 10px 15px;
+    padding: 5px 15px;
     text-align: center;
     cursor: pointer;
 }
