@@ -64,9 +64,13 @@
     background-image: url("chrome-extension://__MSG_@@extension_id__/img/spinner.gif");
 }
 
-.wordie-message, .wordie-definitions-list {
+.wordie-message {
     padding: 10px;
-    font-size: 16px;
+}
+
+.wordie-message, .wordie-definitions-list {
+    font-size: 14px;
+    padding: 7px;
 }
 
 .wordie-message.error {
@@ -75,7 +79,7 @@
 
 .wordie-word {
     margin: 0;
-    padding: 3px 0px 5px 0px;
+    padding: 8px 0 5px 0;
     text-transform: uppercase;
     font-family: "PT Sans Caption", "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-weight: bold;
@@ -84,7 +88,7 @@
 }
 
 .wordie-spelling {
-    padding: 3px 0px 3px 0px;
+    padding: 2px 0 2px 0;
     font-size: 14px;
     text-align: center;
     color: #A0A0A0;
@@ -100,5 +104,7 @@ ul.wordie-definition-entries, li.wordie-definition-entry {
     padding: 0;
 }
 li.wordie-definition-entry {
-    padding: 0px 0px 8px 15px;
+    text-align: left;
+    padding: 0px 0px 8px 10px;
+    line-height: 1.3em;
 }
