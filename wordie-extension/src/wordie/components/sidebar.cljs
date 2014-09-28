@@ -19,10 +19,17 @@
   (let [snapshot @state]
     (when (get-in snapshot [:sidebar :enabled])
       (om/update! state [:sidebar :open] true)
-      (let [status (get-in snapshot [:main :status])]
-        (when-not (= status :loading)
-          (om/update! state [:main :status] :loading)
-          (put! r [:dictionary-query (str "http://wordie.clojurecup.com/api/dictionary?query=" phrase)]))))))
+      (when-not (= phrase (get-in snapshot [:main :phrase]))
+        (om/update! state [:main :tab] :definition)
+        (om/update! state [:main :phrase] phrase)
+        (let [definition-status (get-in snapshot [:main :definition :status])
+              thesaurus-status  (get-in snapshot [:main :thesaurus  :status])]
+          (when-not (or (= definition-status :loading)
+                        (= thesaurus-status  :loading))
+            (om/update! state [:main :definition :status] :loading)
+            (om/update! state [:main :thesaurus  :status] :loading)
+            (put! r [:thesaurus-query  (str "http://wordie.clojurecup.com/api/thesaurus?query=" phrase)])
+            (put! r [:dictionary-query (str "http://wordie.clojurecup.com/api/dictionary?query=" phrase)])))))))
 
 (defn strip-numbers
   [s]
@@ -34,11 +41,15 @@
 
 (defn show-definition
   [state data]
-  (om/transact! state [:main] #(assoc % :status :loaded :data data)))
+  (om/transact! state [:main :definition] #(assoc % :status :loaded :data data)))
+
+(defn load-thesaurus-data
+  [state data]
+  (om/transact! state [:main :thesaurus] #(assoc % :status :loaded :data data)))
 
 (defn switch-to-error
-  [state]
-  (om/update! state [:main :status] :failed))
+  [state key]
+  (om/update! state [:main key :status] :failed))
 
 (defn switch-wordie-status
   [state status]
@@ -69,13 +80,15 @@
   [state [event-type data]]
   (case event-type
     :dictionary-query (show-definition state data)
+    :thesaurus-query  (load-thesaurus-data state data)
     :detect-language  (om/transact! state [:main] #(assoc % :language data))))
 
 (defn handle-loading-error
   [state [event-type _]]
   (case event-type
-    :dictionary-query (switch-to-error state)
-    :detect-language nil)) ; TODO: What is the expected behavior in this case?
+    :dictionary-query (switch-to-error state :definition)
+    :thesaurus-query  (switch-to-error state :thesaurus)    
+    nil))
 
 (defn handle-storage-read-response
   [state [event-type data]]
@@ -115,7 +128,7 @@
   (reify
     om/IRenderState
     (render-state [_ {:keys [commands]}]
-      (let [{:keys [status data language tab]} state]
+      (let [{:keys [definition thesaurus language tab]} state]
         (dom/div #js {:className "wordie-content"}
                  (dom/div #js {:className "wordie-tab-panel"}
                           (dom/div #js {:className (str "wordie-tab"
@@ -128,22 +141,23 @@
                                                           " active"))
                                         :onClick  #(on-tab-selection % commands :thesaurus)}
                                    "Thesaurus"))
-                 (case status
-                   :loading
-                   (dom/div #js {:className "wordie-spinner"}"")
-                   :loaded
-                   (if (seq data)
-                     (apply dom/div #js {:className "wordie-definitions-list"}
-                            (om/build-all definition-view data))
+                 (let [{:keys [status data]} (if (= tab :definition) definition thesaurus)]
+                   (case status
+                     :loading
+                     (dom/div #js {:className "wordie-spinner"}"")
+                     :loaded
+                     (if (seq data)
+                       (apply dom/div #js {:className "wordie-definitions-list"}
+                              (om/build-all definition-view data))
+                       (dom/div #js {:className "wordie-message"}
+                                (str "Looks like we don't know that word."
+                                     (when-not (= language "en")
+                                       " We currently support only English."))))
+                     :failed
+                     (dom/div #js {:className "wordie-message error"}
+                              "We are sorry, but we could not contact our servers. Please try again later.")
                      (dom/div #js {:className "wordie-message"}
-                              (str "Looks like we don't know that word."
-                                   (when-not (= language "en")
-                                     " We currently support only English."))))
-                   :failed
-                   (dom/div #js {:className "wordie-message error"}
-                            "We are sorry, but we could not contact our servers. Please try again later.")
-                   (dom/div #js {:className "wordie-message"}
-                            "Select a word or a phrase on the page to see its definition.")))))))
+                              "Select a word or a phrase on the page to see its definition."))))))))
 
 (defn sidebar-component
   [state owner]
