@@ -5,6 +5,7 @@
             [ring.util.response :as resp]
             [wordie-server.merriam-webster.api :as merriam-webster-api]
             [wordie-server.yandex.api :as yandex-api]
+            [wordie-server.wikipedia.api :as wikipedia-api]
             [cheshire.core :refer (generate-string)]
             [ring.server.standalone :refer (serve)]
             )
@@ -27,7 +28,7 @@
     (response (yandex-api/detect-language query)))
 
   (GET "/api/encyclopedia" [query]
-    (response (wikipedia/intro query)))
+    (response (wikipedia-api/intro query)))
 
   )
 
