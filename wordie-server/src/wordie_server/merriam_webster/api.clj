@@ -53,8 +53,7 @@
   [s]
   (let [xz (zip-string s)]
     (for [entry (xml-> xz :entry)]
-      {:word (xml1-> entry :term :ew text)
-       :spelling (xml1-> entry :term :hw text)
+      {:word (xml1-> entry :term :hw text)
        :definitions (xml-> entry :sens zip/node as-xml)})))
 
 (defn query-thesaurus
