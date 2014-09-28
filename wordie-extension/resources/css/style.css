@@ -71,7 +71,7 @@
 }
 
 .wordie-message, .wordie-definitions-list {
-    font-size: 14px;
+    font-size: 12px;
     padding: 7px;
 }
 
@@ -97,7 +97,7 @@
 }
 
 .wordie-definition-entries {
-    font-size: 14px;
+    font-size: 12px;
 }
 
 ul.wordie-definition-entries, li.wordie-definition-entry {
@@ -114,7 +114,7 @@ li.wordie-definition-entry {
     line-height: 1.3em;
 }
 
-.wordie-definition-entry dt {
+.wordie-definition-entry dt, .wordie-definition-entry vi, .wordie-definition-entry syn, .wordie-definition-entry rel {
     line-height: 1.3em;
     font-weight: normal;
     float: none;
@@ -126,18 +126,43 @@ li.wordie-definition-entry {
 }
 
 li.wordie-definition-entry vi:before {
-  content: " <";
+    content: " <";
 }
 
 li.wordie-definition-entry vi:after {
-  content: "> ";
+    content: "> ";
 }
 
-li.wordie-definition-entry un {
-  display: block;
+li.wordie-definition-entry un, li.wordie-definition-entry syn, li.wordie-definition-entry rel {
+    padding-top: 8px;
+    display: block;
 }
 
-li.wordie-definition-entry sx:not(:last-child):after {
+li.wordie-definition-entry rel:before {
+    content: "related: ";
+    display: block;
+    font-weight: bold;
+    padding-bottom: 4px;
+    color: #303033;
+}
+
+li.wordie-definition-entry syn:before {
+    content: "synonyms: ";
+    display: block;
+    font-weight: bold;
+    padding-bottom: 4px;
+    color: #303033;
+}
+
+li.wordie-definition-entry sn {
+  font-weight: bold;
+}
+
+li.wordie-definition-entry it {
+  color: #A00000;
+}
+
+li.wordie-definition-entry sx:not(:last-child):after, li.wordie-definition-entry sn:after {
   content: " ";
 }
 

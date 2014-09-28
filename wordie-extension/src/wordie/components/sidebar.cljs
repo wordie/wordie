@@ -113,15 +113,18 @@
     (render [_]
       (let [{:keys [word spelling definitions]} data]
         (dom/div #js {:className "wordie-definition"}
-                 (dom/div #js {:className "wordie-word"}
-                           word)
-                 (dom/div #js {:className "wordie-spelling"}
-                           spelling)
-                 (apply dom/ul #js {:className "wordie-definition-entries"}
-                        (for [definition definitions]
-                          (dom/li #js {:className "wordie-definition-entry"
-                                       :dangerouslySetInnerHTML #js {:__html definition}}
-                                  nil))))))))
+                 (when word
+                   (dom/div #js {:className "wordie-word"}
+                            word))
+                 (when spelling
+                   (dom/div #js {:className "wordie-spelling"}
+                            spelling))
+                 (when (seq definitions)
+                   (apply dom/ul #js {:className "wordie-definition-entries"}
+                          (for [definition definitions]
+                            (dom/li #js {:className "wordie-definition-entry"
+                                         :dangerouslySetInnerHTML #js {:__html definition}}
+                                    nil)))))))))
 
 (defn sidebar-content-component
   [state owner]
