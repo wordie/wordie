@@ -191,3 +191,7 @@ footer {
 p.copyright {
     margin: 15px 0 0;
 }
+
+.mce_inline_error {
+    display: none;
+}
