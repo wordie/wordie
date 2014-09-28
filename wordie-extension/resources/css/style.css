@@ -119,6 +119,10 @@ li.wordie-definition-entry {
     clear: none;
 }
 
+.wordie-definition-entry dt:after {
+    content: "";
+}
+
 li.wordie-definition-entry vi:before {
   content: " <";
 }
