@@ -26,8 +26,8 @@
       {:word (xml1-> entry :ew text)
        :spelling (xml1-> entry :hw text)
        :definitions (for [node (xml-> entry :def :dt zip/node)]
-                      (with-out-str (xml/emit-element node)))})))
-
+                      (clj-str/replace (with-out-str (xml/emit-element node))
+                                       "\n" ""))})))
 
 (defn build-dictionary-query-url
   [s]
