@@ -193,5 +193,5 @@ p.copyright {
 }
 
 #mc_embed_signup div.mce_inline_error {
-    display: none;
+    display: none !important;
 }
