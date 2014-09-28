@@ -3,7 +3,8 @@
 (def app-state
   (atom
    {:sidebar
-    {:open false}
+    {:open    false
+     :enabled false}
 
     :main
     {:status   :initial

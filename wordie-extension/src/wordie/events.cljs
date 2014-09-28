@@ -49,3 +49,24 @@
             (send-request! request out)
             (recur (<! in)))))
     {:in in :out out}))
+
+(defn make-storage-api-request!
+  [[type callback data] responses]
+  (let [storage (.. js/chrome -storage -local)
+        request (clj->js data)]
+    (case type
+      :get (.get storage request (fn [response]
+                                   (put! responses [:storage-get [callback (js->clj response)]])))
+      :set (.set storage request (fn []
+                                   (put! responses [:storage-set [callback nil]])))
+      nil)))
+
+(defn storage-channel
+  []
+  (let [in  (chan)
+        out (chan)]
+    (go (loop [request (<! in)]
+          (when request
+            (make-storage-api-request! request out)
+            (recur (<! in)))))
+    {:in in :out out}))

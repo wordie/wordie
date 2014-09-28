@@ -4,7 +4,7 @@
             [cljs.core.async :as async :refer [chan put!]]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
-            [wordie.events :refer [selection server-channel]]))
+            [wordie.events :refer [selection server-channel storage-channel]]))
 
 ;;
 ;; Actions
@@ -16,11 +16,13 @@
 
 (defn load-definition
   [state phrase r]
-  (om/update! state [:sidebar :open] true)
-  (let [status (get-in @state [:main :status])]
-    (when-not (= status :loading)
-      (om/update! state [:main :status] :loading)
-      (put! r [:dictionary-query (str "http://wordie.clojurecup.com/api/dictionary?query=" phrase)]))))
+  (let [snapshot @state]
+    (when (get-in snapshot [:sidebar :enabled])
+      (om/update! state [:sidebar :open] true)
+      (let [status (get-in snapshot [:main :status])]
+        (when-not (= status :loading)
+          (om/update! state [:main :status] :loading)
+          (put! r [:dictionary-query (str "http://wordie.clojurecup.com/api/dictionary?query=" phrase)]))))))
 
 (defn strip-numbers
   [s]
@@ -37,6 +39,10 @@
 (defn switch-to-error
   [state]
   (om/update! state [:main :status] :failed))
+
+(defn switch-wordie-status
+  [state status]
+  (om/update! state [:sidebar :enabled] status))
 
 ;;
 ;; Events
@@ -102,35 +108,51 @@
     :dictionary-query (switch-to-error state)
     :detect-language nil)) ; TODO: What is the expected behavior in this case?
 
+(defn handle-storage-read-response
+  [state [event-type data]]
+  (case event-type
+    :wordie-status (switch-wordie-status state (get data "wordieEnabled" false))
+    nil))
+
 (defn sidebar-component
   [state owner]
   (reify
     om/IInitState
     (init-state [_]
-      (let [{:keys [in out]} (server-channel)]
-        {:commands (async/merge [(selection) out])
-         :requests in}))
+      (let [{server-in :in server-out :out}   (server-channel)
+            {storage-in :in storage-out :out} (storage-channel)]
+        {:commands (async/merge [(selection) server-out storage-out])
+         :server   server-in
+         :storage  storage-in}))
 
     om/IWillMount
     (will-mount [_]
       (let [commands (om/get-state owner :commands)
-            requests (om/get-state owner :requests)]
-        (lookup-language state document.title requests)
+            server   (om/get-state owner :server)
+            storage  (om/get-state owner :storage)]
+        (lookup-language state document.title server)
+        (put! storage [:get :wordie-status "wordieEnabled"])
         (go-loop []
           (when-let [[command data] (<! commands)]
             (case command
               :toggle           (toggle-sidebar state)
-              :select           (load-definition state (:text data) requests)
+              :select           (load-definition state (:text data) server)
               :loading-success  (handle-loading-success state data)
               :loading-error    (handle-loading-error state data)
+              :storage-get      (handle-storage-read-response state data)
               nil)
             (recur)))))
 
     om/IRenderState
     (render-state [_ {:keys [commands]}]
-      (let [open   (get-in state [:sidebar :open] false)]
+      (let [open    (get-in state [:sidebar :open] false)
+            enabled (get-in state [:sidebar :enabled] false)]
         (dom/div #js {:className (str "wordie-sidebar" (if open " open" " closed"))}
                  (dom/div #js {:className "wordie-toggle"
                                :onClick   #(on-toggle-click % commands)} "")
-                 (om/build sidebar-content-component (:main state)))))))
+                 (if enabled
+                   (om/build sidebar-content-component (:main state))
+                   (dom/div #js {:className "wordie-content"}
+                            (dom/div #js {:className "wordie-message"}
+                                     "Looks like Wordie lookup is disabled."))))))))
 
