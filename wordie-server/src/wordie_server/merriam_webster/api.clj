@@ -46,7 +46,7 @@
   (parse-dictionary-xml (slurp (build-dictionary-query-url s))))
 
 (def build-thesaurus-query-url
-  (partial thesaurus-url mw-keys/thesaurus))
+  (partial build-query-url thesaurus-url mw-keys/thesaurus))
 
 (defn parse-thesaurus-xml
   [s]
