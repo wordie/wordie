@@ -26,6 +26,9 @@
   (GET "/api/detect" [query]
     (response (yandex-api/detect-language query)))
 
+  (GET "/api/encyclopedia" [query]
+    (response (wikipedia/intro query)))
+
   )
 
 (defn wrap-cors
