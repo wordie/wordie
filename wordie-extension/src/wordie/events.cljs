@@ -70,3 +70,12 @@
             (make-storage-api-request! request out)
             (recur (<! in)))))
     {:in in :out out}))
+
+
+(defn messages
+  []
+  (let [out (chan)
+        api (.. js/chrome -runtime -onMessage)]
+    (.addListener api (fn [request _ _]
+                        (put! out [:message (js->clj request)])))
+    out))

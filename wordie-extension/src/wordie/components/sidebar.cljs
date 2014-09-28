@@ -4,7 +4,7 @@
             [cljs.core.async :as async :refer [chan put!]]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
-            [wordie.events :refer [selection server-channel storage-channel]]))
+            [wordie.events :refer [messages selection server-channel storage-channel]]))
 
 ;;
 ;; Actions
@@ -114,6 +114,13 @@
     :wordie-status (switch-wordie-status state (get data "wordieEnabled" false))
     nil))
 
+(defn handle-internal-message
+  [state data]
+  (let [status (get data "wordieEnabled")]
+    (when-not (nil? status)
+      (switch-wordie-status state status))))
+
+
 (defn sidebar-component
   [state owner]
   (reify
@@ -121,7 +128,7 @@
     (init-state [_]
       (let [{server-in :in server-out :out}   (server-channel)
             {storage-in :in storage-out :out} (storage-channel)]
-        {:commands (async/merge [(selection) server-out storage-out])
+        {:commands (async/merge [(messages) (selection) server-out storage-out])
          :server   server-in
          :storage  storage-in}))
 
@@ -140,6 +147,7 @@
               :loading-success  (handle-loading-success state data)
               :loading-error    (handle-loading-error state data)
               :storage-get      (handle-storage-read-response state data)
+              :message          (handle-internal-message state data)
               nil)
             (recur)))))
 

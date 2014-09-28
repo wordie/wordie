@@ -10,7 +10,8 @@
       "128": "img/icon128.png"
   },
   "permissions": [
-      "storage"
+      "storage",
+      "tabs"
   ],
   "content_scripts": [
     {

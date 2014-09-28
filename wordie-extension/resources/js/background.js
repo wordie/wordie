@@ -20,6 +20,11 @@ chrome.browserAction.onClicked.addListener(function() {
         chrome.storage.local.set({'wordieEnabled': !wordieEnabled}, function() {
             updateBadge(!wordieEnabled);
         });
+        chrome.tabs.query({status: "complete"}, function(tabs) {
+            for (var i=0; i < tabs.length; i++) {
+                chrome.tabs.sendMessage(tabs[i].id, {'wordieEnabled': !wordieEnabled});
+            };
+        });
     });
     
 });
