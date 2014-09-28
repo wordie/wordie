@@ -1,7 +1,6 @@
 (ns wordie-server.wikipedia.api
   (:import java.net.URLEncoder)
-  (:require [wordie-server.yandex.keys :as yx-keys]
-            [cheshire.core :refer (parse-string)]))
+  (:require [cheshire.core :refer (parse-string)]))
 
 (def url
   "http://en.wikipedia.org/w/api.php?action=query&prop=extracts&format=json&redirects&exchars=2048")
