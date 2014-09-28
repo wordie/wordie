@@ -54,7 +54,31 @@ h6 {
 }
 
 .intro-message > h3 {
+    color: #EDD613;
     text-shadow: 2px 2px 3px rgba(0,0,0,0.6);
+}
+
+.intro-message p {
+    font-size: 1.5em;
+    width: 320px;
+    margin: auto;
+    text-shadow: 2px 2px 3px rgba(0,0,0,0.85);
+}
+
+.install {
+    margin: auto;
+    padding: 20px 0;
+}
+
+.install .install-button {
+    background-color: #428bca;
+    border-color: #357ebd;
+}
+
+.install p {
+    padding-top: 8px;
+    font-size: 0.8em;
+    text-shadow: none;
 }
 
 @media(max-width:767px) {
@@ -119,7 +143,11 @@ h6 {
 .banner h2 {
     margin: 0;
     text-shadow: 2px 2px 3px rgba(0,0,0,0.6);
-    font-size: 3em;
+    text-align: center;
+}
+
+.banner .install {
+    width: 126px;
 }
 
 .banner ul {
@@ -142,7 +170,6 @@ h6 {
     .banner h2 {
         margin: 0;
         text-shadow: 2px 2px 3px rgba(0,0,0,0.6);
-        font-size: 3em;
     }
 
     ul.banner-social-buttons > li {
