@@ -44,6 +44,11 @@
   [state status]
   (om/update! state [:sidebar :enabled] status))
 
+(defn activate-tab
+  [state tab]
+  (when-not (= tab (get-in @state [:main :tab]))
+    (om/update! state [:main :tab] tab)))
+
 ;;
 ;; Events
 ;;
@@ -51,6 +56,10 @@
 (defn on-toggle-click
   [_ commands]
   (put! commands [:toggle nil]))
+
+(defn on-tab-selection
+  [_ commands tab]
+  (put! commands [:change-tab tab]))
 
 ;;
 ;; Handlers
@@ -104,10 +113,21 @@
 (defn sidebar-content-component
   [state owner]
   (reify
-    om/IRender
-    (render [_]
-      (let [{:keys [status data language]} state]
+    om/IRenderState
+    (render-state [_ {:keys [commands]}]
+      (let [{:keys [status data language tab]} state]
         (dom/div #js {:className "wordie-content"}
+                 (dom/div #js {:className "wordie-tab-panel"}
+                          (dom/div #js {:className (str "wordie-tab"
+                                                        (when (= tab :definition)
+                                                          " active"))
+                                        :onClick  #(on-tab-selection % commands :definition)}
+                                   "Definition")
+                          (dom/div #js {:className (str "wordie-tab"
+                                                        (when (= tab :thesaurus)
+                                                          " active"))
+                                        :onClick  #(on-tab-selection % commands :thesaurus)}
+                                   "Thesaurus"))
                  (case status
                    :loading
                    (dom/div #js {:className "wordie-spinner"}"")
@@ -152,6 +172,7 @@
               :loading-error    (handle-loading-error state data)
               :storage-get      (handle-storage-read-response state data)
               :message          (handle-internal-message state data)
+              :change-tab       (activate-tab state data)
               nil)
             (recur)))))
 
@@ -163,7 +184,7 @@
                  (dom/div #js {:className "wordie-toggle"
                                :onClick   #(on-toggle-click % commands)} "")
                  (if enabled
-                   (om/build sidebar-content-component (:main state))
+                   (om/build sidebar-content-component (:main state) {:init-state {:commands commands}})
                    (dom/div #js {:className "wordie-content"}
                             (dom/div #js {:className "wordie-message"}
                                      "Looks like Wordie lookup is disabled."))))))))

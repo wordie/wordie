@@ -7,6 +7,15 @@
      :enabled false}
 
     :main
-    {:status   :initial
-     :data     nil
-     :language nil}}))
+    {:tab     :definition
+     :language   nil
+     :phrase     nil
+
+     :definition
+     {:data   nil
+      :status :initial}
+
+     :thesaurus
+     {:data   nil
+      :status :initial}
+     }}))

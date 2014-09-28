@@ -138,3 +138,33 @@ li.wordie-definition-entry un {
 li.wordie-definition-entry sx:not(:last-child):after {
   content: " ";
 }
+
+.wordie-tab-panel {
+    font-size: 12px;
+    text-transform: uppercase;
+    border-bottom: 1px solid #d0d0d0;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.wordie-tab-panel .wordie-tab {
+    display: inline-block;
+    width: 95px;
+    padding: 10px 15px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.wordie-tab-panel .wordie-tab.active {
+    background-color: #454545;
+    color: #FFFFFF;
+}
+
+.wordie-tab-panel .wordie-tab:hover {
+    background-color: #808080;
+    color: #FFFFFF;
+}
