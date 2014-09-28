@@ -9,6 +9,10 @@
     font-weight: normal;
 }
 
+.wordie-sidebar * {
+    color: #202020;
+}
+
 .wordie-sidebar .wordie-content {
     position: absolute;
     top: 0;
