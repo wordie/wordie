@@ -53,6 +53,34 @@
   (put! commands [:toggle nil]))
 
 ;;
+;; Handlers
+;;
+
+(defn handle-loading-success
+  [state [event-type data]]
+  (case event-type
+    :dictionary-query (show-definition state data)
+    :detect-language  (om/transact! state [:main] #(assoc % :language data))))
+
+(defn handle-loading-error
+  [state [event-type _]]
+  (case event-type
+    :dictionary-query (switch-to-error state)
+    :detect-language nil)) ; TODO: What is the expected behavior in this case?
+
+(defn handle-storage-read-response
+  [state [event-type data]]
+  (case event-type
+    :wordie-status (switch-wordie-status state (get data "wordieEnabled" false))
+    nil))
+
+(defn handle-internal-message
+  [state data]
+  (let [status (get data "wordieEnabled")]
+    (when-not (nil? status)
+      (switch-wordie-status state status))))
+
+;;
 ;; Components
 ;;
 
@@ -96,31 +124,6 @@
                             "We are sorry, but we could not contact our servers. Please try again later.")
                    (dom/div #js {:className "wordie-message"}
                             "Select a word or a phrase on the page to see its definition.")))))))
-
-(defn handle-loading-success
-  [state [event-type data]]
-  (case event-type
-    :dictionary-query (show-definition state data)
-    :detect-language  (om/transact! state [:main] #(assoc % :language data))))
-
-(defn handle-loading-error
-  [state [event-type _]]
-  (case event-type
-    :dictionary-query (switch-to-error state)
-    :detect-language nil)) ; TODO: What is the expected behavior in this case?
-
-(defn handle-storage-read-response
-  [state [event-type data]]
-  (case event-type
-    :wordie-status (switch-wordie-status state (get data "wordieEnabled" false))
-    nil))
-
-(defn handle-internal-message
-  [state data]
-  (let [status (get data "wordieEnabled")]
-    (when-not (nil? status)
-      (switch-wordie-status state status))))
-
 
 (defn sidebar-component
   [state owner]
