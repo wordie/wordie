@@ -19,18 +19,15 @@
   (zip/xml-zip (xml/parse (ByteArrayInputStream.
                             (.getBytes s "UTF-8")))))
 
-(defn- text-preserve
-  [loc]
-  (let [string-node (xml-> loc zf/descendants zip/node string?)]
-    (clj-str/join " " (map clj-str/trim string-node))))
-
 (defn parse-xml
   [s]
   (let [xz (zip-string s)]
     (for [entry (xml-> xz :entry)]
       {:word (xml1-> entry :ew text)
        :spelling (xml1-> entry :hw text)
-       :definitions (xml-> entry :def :dt text-preserve)})))
+       :definitions (for [node (xml-> entry :def :dt zip/node)]
+                      (with-out-str (xml/emit-element node)))})))
+
 
 (defn build-dictionary-query-url
   [s]

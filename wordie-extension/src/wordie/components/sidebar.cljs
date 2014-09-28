@@ -69,8 +69,9 @@
                            spelling)
                  (apply dom/ul #js {:className "wordie-definition-entries"}
                         (for [definition definitions]
-                          (dom/li #js {:className "wordie-definition-entry"}
-                                  definition))))))))
+                          (dom/li #js {:className "wordie-definition-entry"
+                                       :dangerouslySetInnerHTML #js {:__html definition}}
+                                  nil))))))))
 
 (defn sidebar-content-component
   [state owner]
