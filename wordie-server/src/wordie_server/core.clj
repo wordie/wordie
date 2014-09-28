@@ -20,6 +20,9 @@
   (GET "/api/dictionary" [query]
     (response (merriam-webster-api/query-dictionary query)))
 
+  (GET "/api/thesaurus" [query]
+    (response (merriam-webster-api/query-thesaurus query)))
+
   (GET "/api/detect" [query]
     (response (yandex-api/detect-language query)))
 
