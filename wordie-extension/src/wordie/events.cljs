@@ -35,10 +35,10 @@
 (defn send-request!
   [[event-type url] responses]
   (goog.net.XhrIo/send url (fn [response]
-                    (let [xhr (aget response "target")]
-                      (if (.isSuccess xhr)
-                        (put! responses (safe-read-response event-type (.getResponseText xhr)))
-                        (put! responses [:loading-error [event-type nil]]))))))
+                             (let [xhr (aget response "target")]
+                               (if (.isSuccess xhr)
+                                 (put! responses (safe-read-response event-type (.getResponseText xhr)))
+                                 (put! responses [:loading-error [event-type nil]]))))))
 
 (defn server-channel
   []
