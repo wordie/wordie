@@ -184,6 +184,15 @@
                      (dom/div #js {:className "wordie-message"}
                               "Select a word or a phrase on the page to see its definition."))))))))
 
+(defn sidebar-toggle-component
+  [_ owner opts]
+  (reify
+    om/IRender
+    (render [_]
+      (let [commands (:commands opts)]
+        (dom/div #js {:className "wordie-toggle"
+                      :onClick   #(on-toggle-click % commands)} "")))))
+
 (defn sidebar-component
   [state owner]
   (reify
@@ -220,11 +229,11 @@
       (let [open    (get-in state [:sidebar :open] false)
             enabled (get-in state [:sidebar :enabled] false)]
         (dom/div #js {:className (str "wordie-sidebar" (if open " open" " closed") (when-not enabled " disabled"))}
-                 (dom/div #js {:className "wordie-toggle"
-                               :onClick   #(on-toggle-click % commands)} "")
+                 (om/build sidebar-toggle-component nil {:react-key "wordie-toggle"
+                                                         :opts      {:commands commands}})
                  (if enabled
-                   (om/build sidebar-content-component (:main state) {:init-state {:commands commands}})
+                   (om/build sidebar-content-component (:main state) {:react-key  "wordie-content"
+                                                                      :init-state {:commands commands}})
                    (dom/div #js {:className "wordie-content"}
                             (dom/div #js {:className "wordie-message"}
                                      "Looks like Wordie lookup is disabled."))))))))
-
