@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "wordie",
-  "version": "0.0.2",
+  "version": "0.0.3",
  
   "description": "Wordie shows you everything you need to know about words you encounter right inside your browser.",
   "icons": {
