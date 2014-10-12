@@ -171,7 +171,9 @@
                        (if (or (= tab :thesaurus)
                                (= tab :definition))
                          (apply dom/div #js {:className "wordie-definitions-list"}
-                                (om/build-all definition-view data))
+                                (concat
+                                 (om/build-all definition-view data)
+                                 [(dom/a #js {:className "mw-copyright" :href "http://www.dictionaryapi.com"})]))
                          (dom/div #js {:className "wordie-wiki-content"}
                                 (when-let [content (first data)]
                                   (dom/div #js {:className "wordie-definition"}

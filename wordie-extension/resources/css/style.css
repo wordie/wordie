@@ -200,3 +200,13 @@ li.wordie-definition-entry sx:not(:last-child):after, li.wordie-definition-entry
     background-color: #808080;
     color: #FFFFFF;
 }
+
+.mw-copyright {
+    background-repeat: no-repeat;
+    width: 50px;
+    height: 50px;
+    display: block;
+    background-size: 50px;
+    background-image: url("chrome-extension://__MSG_@@extension_id__/img/mw-logo.png");
+    margin: 20px auto 10px auto;
+}
