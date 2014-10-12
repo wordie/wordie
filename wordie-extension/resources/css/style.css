@@ -24,6 +24,10 @@
     overflow-y: scroll;
 }
 
+.wordie-sidebar.disabled {
+    display: none;
+}
+
 .wordie-sidebar.closed {
     margin-right: -250px;
 }

@@ -219,7 +219,7 @@
     (render-state [_ {:keys [commands]}]
       (let [open    (get-in state [:sidebar :open] false)
             enabled (get-in state [:sidebar :enabled] false)]
-        (dom/div #js {:className (str "wordie-sidebar" (if open " open" " closed"))}
+        (dom/div #js {:className (str "wordie-sidebar" (if open " open" " closed") (when-not enabled " disabled"))}
                  (dom/div #js {:className "wordie-toggle"
                                :onClick   #(on-toggle-click % commands)} "")
                  (if enabled
