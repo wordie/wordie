@@ -106,6 +106,12 @@
     (when-not (nil? status)
       (switch-wordie-status state status))))
 
+(defn handle-user-message
+  [state data]
+  (om/transact! state [:main :definition] #(assoc % :status :message :data data))
+  (om/transact! state [:main :thesaurus]  #(assoc % :status :message :data data))
+  (om/transact! state [:main :wikipedia]  #(assoc % :status :message :data data)))
+
 ;;
 ;; Components
 ;;
@@ -181,6 +187,9 @@
                      :failed
                      (dom/div #js {:className "wordie-message error"}
                               "We are sorry, but we could not contact our servers. Please try again later.")
+                     :message
+                     (let [{:keys [type text]} data]
+                       (dom/div #js {:className (str "wordie-message " (name type))} text))
                      (dom/div #js {:className "wordie-message"}
                               "Select a word or a phrase on the page to see its definition."))))))))
 
@@ -220,6 +229,7 @@
               :loading-error    (handle-loading-error state data)
               :storage-get      (handle-storage-read-response state data)
               :message          (handle-internal-message state data)
+              :user-message     (handle-user-message state data)
               :change-tab       (activate-tab state data)
               nil)
             (recur)))))

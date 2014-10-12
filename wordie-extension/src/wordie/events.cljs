@@ -18,9 +18,10 @@
         target (aget e "target")]
     (when-not (.contains wordie-node target)
       (when-let [selection (get-selection)]
-        (put! ch [:select {:text selection
-                           :x    (.-pageX e)
-                           :y    (.-pageY e)}])))))
+        (if (> (.-length selection) 50)
+          (put! ch [:user-message {:type :info
+                                   :text "The text you have selected is too long for lookup. Please, make your selection shorter."}])
+          (put! ch [:select {:text selection}]))))))
 
 (defn selection
   []
