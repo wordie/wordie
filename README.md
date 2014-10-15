@@ -10,7 +10,7 @@ To compile the extension, execute:
 
 ```bash
 cd wordie-extension
-lein uberjar
+lein cljsbuild once prod
 ```
 
 To compile a jar-file for the server, execute:
